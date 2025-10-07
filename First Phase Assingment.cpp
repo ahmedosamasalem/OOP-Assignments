@@ -1,31 +1,30 @@
 /*
 ========================================================
- CS213 - Assignment 1 - Part 1
+ CS213 - Assignment 1 - Part 2
  Team Submission
 
- Section   : (No section yet)
+ Section: S 7&8
  
  Team Members:
- - Ahmed Osama Salem (ID: 20240010) : Filters 1(Grayscale), 4(Merge)
- - Kareem Osama Hamed (ID: 20240418)   : Filters 2(Black and White), 5(Flip Image)
- - Omar Sayed Amin (ID: 20240775)  : Filters 3(Invert), 6(Rotate), 17(bonus: Infrared), The menu
+ - Ahmed Osama Salem (ID: 20240010): Filters 1(Grayscale), 4(Merge), 7(Darken and Lighten Image), 10(Detect Image Edges), 16(bonus: make the image purple)
+ - Kareem Osama Hamed (ID: 20240418): Filters 2(Black and White), 5(Flip Image), 8(Crop Images), 11(Resizing Images), 13(bonus: natural sunlight)
+ - Omar Sayed Amin (ID: 20240775): Filters 3(Invert), 6(Rotate), 9(Adding a frame), 12(2 Versions of Blur Image), 17(bonus: Infrared), The menu
 
  File Description:
- This file contains the implementation of 6 filters required
- for Part 1 of the assignment in additon to a filter from the bonus tasks.
+ This file contains the implementation of all 12 filters required
+ for Part 2 of the assignment in additon to  3 filters from the bonus tasks.
  The program provides a menu for the user to choose a filter and applies it to the input image
  and allows the user to load another image or save the current image at any time through
- the running of the application, it also loops until the user request to exit the program.
+ the running of the application, It also loops until the user requests to exit the program.
 ========================================================
 */
-
 #include <bits/stdc++.h>
 #include "Image_class.h"
 using namespace std;
 int working = 1;
 Image image1;
 string image_name;
-bool check_name(string name)
+bool check_name_exist(string name)
 {
     bool file_name;
     bool file_ext = false;
@@ -53,27 +52,38 @@ bool check_name(string name)
     bool file_exist = std::filesystem::exists(name);
     return file_ext && file_exist;
 }
-void first_load()
+bool check_name(string name)
 {
-    cout << "Welcome to our image proccesing application.\n";
-    cout << "Please enter the image's name to load it:\n";
-    cin >> image_name;
-    if(!check_name(image_name))
+    bool file_name;
+    bool file_ext = false;
+    int dot_place = -1;
+    for(int i = name.size() - 1; i >= 0; i--)
     {
-        cout << "The image's name is incorrect or the file doesn't exist, Please try again.\n";
-        first_load();
+        if(name[i] == '.')
+        dot_place = i;
     }
-    else
+    if(dot_place == -1)
+    return false;
+    string ext;
+    for(int i = dot_place + 1; i < name.size(); i++)
     {
-    image1.loadNewImage(image_name);
-    cout << "Image loaded succesfully.\n";
+        ext += name[i];
     }
+    string extentions[5] = {"png","jpg","bmp","tga","jpeg"};
+    for(int i = 0; i < 5; i++)
+    {
+        if(file_ext == true)
+            break;
+        if(ext == extentions[i])
+            file_ext = true;
+    }
+    return file_ext;
 }
 void load_image()
 {
     cout << "Please Enter the image's name: \n";
     cin >> image_name;
-    if(!check_name(image_name))
+    if(!check_name_exist(image_name))
     {
         cout << "Image's name is incorrect or the file doesn't exist, Please try again.\n";
         load_image();
@@ -84,6 +94,23 @@ void load_image()
     cout << "Image loaded succesfully.\n";
     }
 }
+void first_load()
+{
+    cout << "Welcome to our image procesing application.\n";
+    cout << "Please enter the image's name to load it:\n";
+    cin >> image_name;
+    if(!check_name_exist(image_name))
+    {
+        cout << "The image's name is incorrect or the file doesn't exist, Please try again.\n";
+        load_image();
+    }
+    else
+    {
+    image1.loadNewImage(image_name);
+    cout << "Image loaded succesfully.\n";
+    }
+}
+
 Image resize( Image input_image, int new_Width, int new_Height) 
 {
     Image resized_image(new_Width, new_Height); 
@@ -140,7 +167,7 @@ void load_images_4merge()
     {
     cout << "Please Enter the second image's name: \n";
     cin >> image2_name;
-    if(!check_name(image2_name))
+    if(!check_name_exist(image2_name))
         cout << "Image's name is incorrect or the file doesn't exist, Please try again.\n";
     else
         name = true;
@@ -221,7 +248,7 @@ void flip_image()
 {
     cout << "Choose one of the following: \n";
     cout << "1. Flip the image vertically. \n";
-    cout << "2. Flip the image Horizontaly. \n";
+    cout << "2. Flip the image horizontally. \n";
     int op;
     cin >> op;
     if(op == 1)
@@ -298,6 +325,232 @@ void rotate_image()
     }
     cout << "Image succesfully rotated.\n";
 }
+void blur_image()
+{
+    Image image2(image1.width,image1.height);
+    vector<vector<vector<long long>>> img(
+    3, 
+    vector<vector<long long>>(image1.width, vector<long long>(image1.height, 0))
+);
+    img[0][0][0] = image1(0,0,0);
+    img[1][0][0] = image1(0,0,1);
+    img[2][0][0] = image1(0,0,2);
+    for(int k = 0; k < 3; k++)
+    {
+    for(int i = 1; i < image1.width; i++)
+    {
+        img[k][i][0] = img[k][i - 1][0] + image1(i,0,k);
+    }
+    for(int i = 1; i < image1.height; i++)
+    {
+        img[k][0][i] = img[k][0][i - 1] + image1(0,i,k);
+    }
+    for(int i = 1; i < image1.width; i++)
+    {
+        for(int j = 1; j < image1.height; j++)
+        {
+            img[k][i][j] = image1(i,j,k) + img[k][i-1][j] + img[k][i][j-1] - img[k][i-1][j-1];
+        }
+    }
+    }
+    for(int i = 0; i < image1.width; i++)
+    {
+        for(int j = 0; j < image1.height; j++)
+        {
+            for(int k = 0; k < 3; k++)
+            {
+                int x1 = max(0,i - 25);
+                int y1 = max(0,j - 25);
+                int x2 = min(image1.width - 1, i + 25);
+                int y2 = min(image1.height - 1, j + 25);
+                int pixels_num = (x2 - x1 + 1) * (y2 - y1 + 1);
+                long long total = img[k][x2][y2];
+                if (x1 > 0)
+                    total -= img[k][x1-1][y2];
+                if (y1 > 0)
+                    total -= img[k][x2][y1-1];
+                if (x1 > 0 && y1 > 0)
+                    total += img[k][x1-1][y1-1];
+                image2(i,j,k) = total / pixels_num;
+            }
+        }
+    }
+    image1 = image2;
+    cout << "Image blurred successfully. \n";
+}
+void Frame()
+{
+    cout << "Choose a frame type: \n";
+    cout << "1. Simple frame. \n";
+    cout << "2. Decorated frame. \n";
+    int op;
+    cin >> op;
+        cout << "choose the color of the frame: \n";
+        cout << "1. Red frame. \n";
+        cout << "2. Blue frame. \n";
+        cout << "3. Black frame. \n";
+        cout << "4. Green frame. \n";
+        cout << "5. White frame. \n";
+        cout << "6. purple frame. \n";
+        int color;
+        cin >> color;
+        int values[3];
+        if(color == 1)
+        {
+            values[0] = 184;
+            values[1] = 15;
+            values[2] = 10;
+        }
+        if(color == 2)
+        {
+            values[0] = 15;
+            values[1] = 82;
+            values[2] = 186;
+        }
+        if(color == 3)
+        {
+            values[0] = 0;
+            values[1] = 0;
+            values[2] = 0;
+        }
+        if(color == 4)
+        {
+            values[0] = 0;
+            values[1] = 255;
+            values[2] = 0;
+        }
+        if(color == 5)
+        {
+            values[0] = 255;
+            values[1] = 255;
+            values[2] = 255;
+        }
+        if(color == 6)
+        {
+            values[0] = 128;
+            values[1] = 0;
+            values[2] = 128;
+        }
+        int frame = 100;
+        Image image2(image1.width + 2 * frame,image1.height + 2* frame);
+        for(int i = 0; i < image2.width; i++)
+        {
+            
+            for(int j = 0; j <image2.height; j++)
+            {
+                for(int k = 0; k < 3; k++)
+                {
+                image2(i,j,k) = values[k];
+                }
+            }
+        }
+        for(int i = 0;i < image1.width; i++)
+        {
+            for(int j = 0; j < image1.height; j++)
+            {
+                for(int k = 0 ; k < 3; k++)
+                {
+                    image2(i + frame,j + frame,k) = image1(i,j,k);
+                }
+            }
+        }
+        image1 = image2;
+    if(op == 2)
+    {
+            int thickness = 5;
+            int frame = 100;
+            int spacing2 = -50;
+            for(int i = frame; i < image1.width - frame; i++)
+            {
+                for(int j = frame; j < frame + thickness; j++)
+                {
+                    for(int k = 0; k < 3; k++)
+                        image1(i,j,k) = 255;
+                }
+                for(int j = image1.height - frame; j > image1.height - frame - thickness; j--)
+                {
+                    for(int k = 0; k < 3; k++)
+                        image1(i,j,k) = 255;
+                }
+            }
+            for(int j = frame; j < image1.height - frame; j++)
+            {
+                for(int i = frame; i < frame + thickness; i++)
+                {
+                    for(int k = 0; k < 3; k++)
+                        image1(i,j,k) = 255;
+                }
+                for(int i = image1.width - frame; i > image1.width - frame - thickness; i--)
+                {
+                    for(int k = 0; k < 3; k++)
+                        image1(i,j,k) = 255;
+                }
+            }
+            for (int i = frame - spacing2; i < image1.width - frame + spacing2; i++)
+            {
+                for (int j = frame - spacing2; j < frame - spacing2 + thickness; j++)
+                {
+                    for (int k = 0; k < 3; k++)
+                        image1(i, j, k) = 255;
+                }
+                for (int j = image1.height - frame + spacing2 - thickness; j < image1.height - frame + spacing2; j++)
+                {
+                    for (int k = 0; k < 3; k++)
+                        image1(i, j, k) = 255;
+                }
+            }
+
+            for (int j = frame - spacing2; j < image1.height - frame + spacing2; j++)
+            {
+                for (int i = frame - spacing2; i < frame - spacing2 + thickness; i++)
+                {
+                    for (int k = 0; k < 3; k++)
+                        image1(i, j, k) = 255;
+                }
+                for (int i = image1.width - frame + spacing2 - thickness; i < image1.width - frame + spacing2; i++)
+                {
+                    for (int k = 0; k < 3; k++)
+                        image1(i, j, k) = 255;
+                }
+            }
+    }
+    cout << "Frame added successfully. \n";   
+}
+// void blur_image()
+// {
+//     Image image3(image1.width,image1.height);
+//     cout << "choose the intensity of the blur effect ranging from 1 to 10: \n";
+//     int z;
+//     cin >> z;
+//     z = ceil(z/2);
+//     while(z--)
+//     for(int i = 0; i < image1.width; i++)
+//     {
+//         for(int j = 0; j < image1.height; j++)
+//         {
+//                 int values[3] = {0,0,0};
+//                 int pixels = 0;
+
+//                 for(int x = i-6; x <= i+6; x++) {
+//                     for(int y = j-6; y <= j+6; y++) {
+//                         if(x < 0 || y < 0 || x >= image1.width || y >= image1.height) 
+//                             continue;
+//                         for(int k = 0; k < 3; k++) {
+//                             values[k] += image1(x,y,k);
+//                         }
+//                         pixels++;
+//                     }
+//                 }
+
+//                 for(int k = 0; k < 3; k++) {
+//                     image3(i,j,k) = values[k] / pixels;
+//                 }
+
+//         }
+//     }
+//     image1 = image3;
+//     cout << "Image successfully blured. \n";
+// }
 void save_image()
 {
     cout << "Please choose one of the following: \n";
@@ -307,11 +560,19 @@ void save_image()
     cin >> op;
     if(op == 2)
     {
-        cout << "Enter the new file's name : \n";
+        cout << "Enter the new file's name: \n";
         cin >> image_name;
     }
+    if(!check_name(image_name))
+    {
+        cout << "Wrong extension, please try again\n";
+        save_image();
+    }
+    else
+    {
     image1.saveImage(image_name);
     cout << "Image saved succefully.\n";
+    }
 }
 void menu()
 {
@@ -326,11 +587,13 @@ void menu()
     cout << "5. Merge 2 Images.\n";
     cout << "6. Rotate Image.\n";
     cout << "7. Make the image infrared.\n";
-    cout << "8. Flip the image vertically or horizontaly.\n";
-    cout << "9. Save Image.\n";
-    cout << "10. Exit.\n";
+    cout << "8. Flip the image vertically or horizontally.\n";
+    cout << "9. Blur the image. \n";
+    cout << "10. Add a frame.\n";
+    cout << "11. Save image.\n";
+    cout << "12. Exit.\n";
     cin >> operation;
-    if (operation < 1 || operation > 10)
+    if (operation < 1 || operation > 12)
     {
         cout << "invalid operation number, Please try again.\n";
         operation = -1;
@@ -353,8 +616,12 @@ void menu()
     if(operation == 8)
         flip_image();
     if(operation == 9)
-        save_image();
+        blur_image();
     if(operation == 10)
+        Frame();
+    if(operation == 11)
+        save_image();
+    if(operation == 12)
         working = 0;
 }
 int main()
@@ -372,3 +639,5 @@ int main()
     }
     return 0;
 }
+
+
