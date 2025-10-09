@@ -551,6 +551,125 @@ void Frame()
 //     image1 = image3;
 //     cout << "Image successfully blured. \n";
 // }
+
+Image lighten_darken ( Image image )
+{
+    string type ; 
+    cout << "Enter type of image" ; 
+    cin >> type ; 
+    if ( type == "Lighten")
+    {
+        for ( int i = 0 ; i < image.width ; i++)
+    {
+        for ( int j = 0 ; j < image.height ; j++)
+        {
+            int R = image(i,j,0) ; 
+            R =  min(255.0 , R * (1 + 0.6)); 
+            image(i,j,0) = R ; 
+            int G = image(i,j,1) ; 
+            G =   min(255.0 , G * ( 1 + 0.6));
+            image(i,j,1) = G ; 
+            int B = image(i,j,2) ; 
+            B =  min(255.0,B * ( 1 + 0.6));  
+            image(i,j,2) = B ; 
+        }
+    }
+    cout << "The image is now lighten.\n" ; 
+    return image ; 
+    }
+    if ( type == "Darken")
+    {
+       for ( int i = 0 ; i < image.width ; i++)
+    {
+        for ( int j = 0 ; j < image.height ; j++)
+        {
+            int R = image(i,j,0) ; 
+            R =  max(0.0,R * (1 - 0.6)); 
+            image(i,j,0) = R ; 
+            int G = image(i,j,1) ; 
+            G =  max(0.0, G * ( 1 - 0.6));
+            image(i,j,1) = G ; 
+            int B = image(i,j,2) ; 
+            B =  max(0.0,B * ( 1 - 0.6));  
+            image(i,j,2) = B ; 
+        }
+    }
+    cout << "The image is now darken.\n" ;  
+    }
+    else 
+    cout << "Error in type" ;
+    image1 = image ; 
+    return image ; 
+}
+
+Image detect_edges(Image image)
+{
+    for (int i = 0; i < image.width; i++)
+    {
+        for (int j = 0; j < image.height; j++)
+        {
+            int R = image(i, j, 0);
+            int G = image(i, j, 1);
+            int B = image(i, j, 2);
+            int avg = (R + G + B) / 3;
+            if (avg < 128)
+                avg = 0;
+            else
+                avg = 255;
+            image(i, j, 0) = avg;
+            image(i, j, 1) = avg;
+            image(i, j, 2) = avg;
+        }
+    }
+    for (int i = 0; i < image.width - 1; i++)
+    {
+        for (int j = 0; j < image.height - 1; j++)
+        {
+            int R = image(i, j, 0);
+            int d = image(i, j + 1, 0);
+            int r = image(i + 1, j, 0);
+
+            if (d != R || r != R)
+            {
+                image(i, j, 0) = 0;
+                image(i, j, 1) = 0;
+                image(i, j, 2) = 0;
+            }
+            else
+            {
+                image(i, j, 0) = 255;
+                image(i, j, 1) = 255;
+                image(i, j, 2) = 255;
+            }
+        }
+    } 
+    cout << "Image detected his edges successfully" ; 
+    image1 = image ;
+    return image ;
+}
+
+Image purple(Image image)
+{
+   for ( int i = 0 ; i < image.width ; i++)
+    {
+     for( int j = 0 ; j < image.height ; j++)
+     {
+        int R = image(i,j,0) ; 
+        R = min(255 , R + 20) ; 
+        image(i,j,0) = R ; 
+        int G = image(i,j,1) ; 
+        G = max(0 , G - 20) ;
+        image(i,j,1) = G ; 
+        int B = image(i,j,2) ; 
+        B = min(255 , B + 20) ;  
+        image(i,j,2) = B ;  
+     }
+    } 
+    cout << "Image turned to purple successfully " ;  
+    image1 = image ;
+    return image ;
+}
+
 void save_image()
 {
     cout << "Please choose one of the following: \n";
@@ -590,10 +709,14 @@ void menu()
     cout << "8. Flip the image vertically or horizontally.\n";
     cout << "9. Blur the image. \n";
     cout << "10. Add a frame.\n";
-    cout << "11. Save image.\n";
-    cout << "12. Exit.\n";
+    cout << "11. Lighten or Darken Image.\n";
+    cout << "12. Detect Image Edges.\n";
+    cout << "13. Make the image purple.\n";
+    cout << "14. Save image.\n";
+    cout << "15. Exit.\n";
+
     cin >> operation;
-    if (operation < 1 || operation > 12)
+    if (operation < 1 || operation > 15)
     {
         cout << "invalid operation number, Please try again.\n";
         operation = -1;
@@ -620,8 +743,14 @@ void menu()
     if(operation == 10)
         Frame();
     if(operation == 11)
-        save_image();
+       lighten_darken(image1) ;  
     if(operation == 12)
+       detect_edges(image1) ;
+    if(operation == 13)
+       purple(image1) ;
+    if(operation == 14)  
+        save_image();     
+    if(operation == 15)
         working = 0;
 }
 int main()
@@ -639,5 +768,3 @@ int main()
     }
     return 0;
 }
-
-
