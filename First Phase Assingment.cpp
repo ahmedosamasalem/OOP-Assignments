@@ -516,6 +516,92 @@ void Frame()
     }
     cout << "Frame added successfully. \n";   
 }
+Image cropImage(const Image& img, int x, int y, int W, int H) {
+    if (W <= 0 || H <= 0 || x < 0 || y < 0 || x + W > img.width || y + H > img.height) {
+        cout << "Error ==> invalid crop area." << endl;
+        return img;
+    }
+    Image cropped(W, H);
+    for (int i = 0; i < W; i++) {
+        for (int j = 0; j < H; j++) {
+            for (int k = 0; k < img.channels; k++) {
+                cropped(i, j, k) = img(i + x, j + y, k);
+            }
+        }
+    }
+    return cropped;
+}
+void crop_image() {
+    int x, y, W, H;
+    cout << "Enter upper left corner (x , y): ";
+    cin >> x >> y;
+    cout << "Enter the dimensions of the area to cut (W , H): ";
+    cin >> W >> H;
+    Image cropped = cropImage(image1, x, y, W, H);
+    if (cropped.width != image1.width || cropped.height != image1.height) {
+        image1 = cropped;
+        cout << "Image cropped successfully.\n";
+    }
+}
+Image resizeImage(const Image& input_image, int new_width, int new_height) {
+    Image resized_image(new_width, new_height);
+    double width_ratio = (double)input_image.width / new_width;
+    double height_ratio = (double)input_image.height / new_height;
+    for (int j = 0; j < new_height; j++) {
+        for (int i = 0; i < new_width; i++) {
+            int original_i = i * width_ratio;
+            int original_j = j * height_ratio;
+            for (int k = 0; k < 3; k++) {
+                unsigned char value = input_image.getPixel(original_i, original_j, k);
+                resized_image.setPixel(i, j, k, value);
+            }
+        }
+    }
+    return resized_image;
+}
+void resize_image() {
+    int new_width, new_height;
+    cout << "Enter new width: ";
+    cin >> new_width;
+    cout << "Enter new height: ";
+    cin >> new_height;
+    image1 = resizeImage(image1, new_width, new_height);
+    cout << "Image resized successfully.\n";
+}
+Image wanoFilter(const Image& image) {
+    Image result(image.width, image.height);
+    for (int i = 0; i < image.width; i++) {
+        for (int j = 0; j < image.height; j++) {
+            int R = image(i, j, 0) + 30;
+            int G = image(i, j, 1) + 30;
+            int B = image(i, j, 2) - 30;
+            if (R > 255)
+            {
+                R = 255;
+            }
+            if (G > 255)
+            {
+                G = 255;
+            } 
+            if (B > 255) 
+            {
+                B = 255;
+            }
+            if (B < 0)
+            {
+                B = 0;
+            }
+            result(i, j, 0) = R;
+            result(i, j, 1) = G;
+            result(i, j, 2) = B;
+        }
+    }
+    return result;
+}
+void wano_filter() {
+    image1 = wanoFilter(image1);
+    cout << "Wano filter applied successfully.\n";
+}
 // void blur_image()
 // {
 //     Image image3(image1.width,image1.height);
@@ -590,10 +676,13 @@ void menu()
     cout << "8. Flip the image vertically or horizontally.\n";
     cout << "9. Blur the image. \n";
     cout << "10. Add a frame.\n";
-    cout << "11. Save image.\n";
-    cout << "12. Exit.\n";
+    cout << "11. Crop Image.\n";
+    cout << "12. Resize Image.\n";
+    cout << "13. Wano Filter.\n";
+    cout << "14. Save image.\n";
+    cout << "15. Exit.\n";
     cin >> operation;
-    if (operation < 1 || operation > 12)
+    if (operation < 1 || operation > 15)
     {
         cout << "invalid operation number, Please try again.\n";
         operation = -1;
@@ -620,8 +709,14 @@ void menu()
     if(operation == 10)
         Frame();
     if(operation == 11)
-        save_image();
+        crop_image();   
     if(operation == 12)
+        resize_image();
+    if(operation == 13)
+        wano_filter();         
+    if(operation == 14)
+        save_image();
+    if(operation == 15)
         working = 0;
 }
 int main()
@@ -639,5 +734,3 @@ int main()
     }
     return 0;
 }
-
-
