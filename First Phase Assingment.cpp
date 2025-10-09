@@ -676,11 +676,14 @@ void menu()
     cout << "8. Flip the image vertically or horizontally.\n";
     cout << "9. Blur the image. \n";
     cout << "10. Add a frame.\n";
-    cout << "11. Crop Image.\n";
-    cout << "12. Resize Image.\n";
-    cout << "13. Wano Filter.\n";
-    cout << "14. Save image.\n";
-    cout << "15. Exit.\n";
+    cout << "11. Lighten or Darken Image.\n";
+    cout << "12. Detect Image Edges.\n";
+    cout << "13. Make the image purple.\n";
+    cout << "14. Crop Image.\n";
+    cout << "15. Resize Image.\n";
+    cout << "16. Wano Filter.\n";
+    cout << "17. Save image.\n";
+    cout << "18. Exit.\n";
     cin >> operation;
     if (operation < 1 || operation > 15)
     {
@@ -708,15 +711,15 @@ void menu()
         blur_image();
     if(operation == 10)
         Frame();
-    if(operation == 11)
-        crop_image();   
-    if(operation == 12)
-        resize_image();
-    if(operation == 13)
-        wano_filter();         
     if(operation == 14)
-        save_image();
+        crop_image();   
     if(operation == 15)
+        resize_image();
+    if(operation == 16)
+        wano_filter();         
+    if(operation == 17)
+        save_image();
+    if(operation == 18)
         working = 0;
 }
 int main()
@@ -734,3 +737,4 @@ int main()
     }
     return 0;
 }
+
