@@ -805,7 +805,7 @@ void menu()
     cout << "18. Exit.\n";
 
     cin >> operation;
-    if (operation < 1 || operation > 15)
+    if (operation < 1 || operation > 18)
     {
         cout << "invalid operation number, Please try again.\n";
         operation = -1;
@@ -863,4 +863,5 @@ int main()
     }
     return 0;
 }
+
 
