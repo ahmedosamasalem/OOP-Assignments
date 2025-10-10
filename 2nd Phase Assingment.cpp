@@ -638,12 +638,14 @@ void wano_filter() {
 //     cout << "Image successfully blured. \n";
 // }
 
-Image lighten_darken ( Image image )
+void lighten_darken ( Image image )
 {
-    string type ; 
-    cout << "Enter type of image" ; 
+    int type ; 
+    cout << "Choose one of the following: \n" ; 
+    cout << "1. Lighten the image. \n";
+    cout << "2. Darken the image. \n";
     cin >> type ; 
-    if ( type == "Lighten")
+    if ( type == 1)
     {
         for ( int i = 0 ; i < image.width ; i++)
     {
@@ -661,9 +663,8 @@ Image lighten_darken ( Image image )
         }
     }
     cout << "The image is now lighten.\n" ; 
-    return image ; 
     }
-    if ( type == "Darken")
+    else if ( type == 2)
     {
        for ( int i = 0 ; i < image.width ; i++)
     {
@@ -685,7 +686,6 @@ Image lighten_darken ( Image image )
     else 
     cout << "Error in type" ;
     image1 = image ; 
-    return image ; 
 }
 
 Image detect_edges(Image image)
@@ -863,5 +863,6 @@ int main()
     }
     return 0;
 }
+
 
 
