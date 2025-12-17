@@ -1,4 +1,4 @@
-# OOP-Assignments
+# OOP-Assignment1
  Program breakdown: 
 Filter List (1–15)
 1.	Grayscale conversion filter
