@@ -21,7 +21,12 @@ Video Link: https://drive.google.com/file/d/1ca75s26jqeQf9TZ10vE-xuPCgbpcC5ku/vi
  the running of the application, It also loops until the user requests to exit the program.
 ========================================================
 */
-#include <bits/stdc++.h>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <filesystem>
+#include <algorithm>
+#include <cmath>
 #include "Image_class.h"
 using namespace std;
 int working = 1;
